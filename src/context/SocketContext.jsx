@@ -8,7 +8,7 @@ import axios from 'axios';
 export const socketContext = createContext();
 
 // Singleton socket — created once, shared by entire app
-export const socket = io("http://localhost:8000", { autoConnect: false });
+export const socket = io("https://linkedinbackend-jgbh.onrender.com", { autoConnect: false });
 
 function SocketProvider({ children }) {
   const { userData } = useContext(userDataContext);
