@@ -2,7 +2,7 @@ import React, { useContext, useRef, useState } from 'react';
 import { userDataContext } from '../context/userContext';
 import dp from "../assets/dp.webp";
 import { Camera, Plus, X } from "lucide-react";
-import axios from 'axios';
+import axiosInstance from '../lib/axios';
 import { authDataContext } from '../context/AuthContext';
 import { Modal } from './ui/Modal';
 import { Button } from './ui/Button';
@@ -114,7 +114,7 @@ function EditProfile() {
         formdata.append("coverImage", backendCoverImage);
       }
 
-      let result = await axios.put(serverUrl + "/api/user/updateprofile", formdata, { withCredentials: true });
+      let result = await axiosInstance.put("/api/user/updateprofile", formdata);
       setUserData(result.data);
       setSaving(false);
       setEdit(false);

@@ -4,7 +4,7 @@ import dp from "../assets/dp.webp";
 import { Camera, Edit3, Plus, GraduationCap, Briefcase, Award } from "lucide-react";
 import { userDataContext } from '../context/userContext';
 import { authDataContext } from '../context/AuthContext';
-import axios from 'axios';
+import axiosInstance from '../lib/axios';
 import EditProfile from '../components/EditProfile';
 import Post from '../components/Post';
 import ConnectionButton from '../components/ConnectionButton';

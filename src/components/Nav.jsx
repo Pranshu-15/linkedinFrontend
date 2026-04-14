@@ -5,8 +5,7 @@ import logo2 from "../assets/logo2.png";
 import { Search, Home, Users, Bell, LogOut, User, Menu, Moon, Sun } from "lucide-react";
 import dp from "../assets/dp.webp";
 import { userDataContext } from '../context/userContext';
-import { authDataContext } from '../context/AuthContext';
-import axios from 'axios';
+import axiosInstance from '../lib/axios';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar } from './ui/Avatar';
@@ -19,7 +18,6 @@ function Nav() {
   let { userData, setUserData, handleGetProfile } = useContext(userDataContext);
   let [showPopup, setShowPopup] = useState(false);
   let navigate = useNavigate();
-  let { serverUrl } = useContext(authDataContext);
   let [searchInput, setSearchInput] = useState("");
   let [searchData, setSearchData] = useState([]);
   let [isDark, setIsDark] = useState(true);
@@ -44,7 +42,8 @@ function Nav() {
 
   const handleSignOut = async () => {
     try {
-      await axios.get(serverUrl + "/api/auth/logout", { withCredentials: true });
+      await axiosInstance.get("/api/auth/logout");
+      localStorage.removeItem("token");
       setUserData(null);
       toast.success("Successfully logged out");
       navigate("/login");
@@ -59,7 +58,7 @@ function Nav() {
       return;
     }
     try {
-      let result = await axios.get(`${serverUrl}/api/user/search?query=${searchInput}`, { withCredentials: true });
+      let result = await axiosInstance.get(`/api/user/search?query=${searchInput}`);
       setSearchData(result.data);
     } catch (error) {
       setSearchData([]);

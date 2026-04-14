@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { authDataContext } from '../context/AuthContext';
-import axios from 'axios';
+import axiosInstance from '../lib/axios';
 import { socket } from '../context/SocketContext';
 import { userDataContext } from '../context/userContext';
 import { useNavigate } from 'react-router-dom';
@@ -19,7 +19,7 @@ function ConnectionButton({ userId }) {
   const handleSendConnection = async () => {
     try {
       setLoading(true);
-      await axios.post(`${serverUrl}/api/connection/send/${userId}`, {}, { withCredentials: true });
+      await axiosInstance.post(`${serverUrl}/api/connection/send/${userId}`, {});
       setStatus("pending");
       toast.success("Connection request sent");
     } catch (error) {
@@ -32,7 +32,7 @@ function ConnectionButton({ userId }) {
   const handleRemoveConnection = async () => {
     try {
       setLoading(true);
-      await axios.delete(`${serverUrl}/api/connection/remove/${userId}`, { withCredentials: true });
+      await axiosInstance.delete(`${serverUrl}/api/connection/remove/${userId}`);
       setStatus("connect");
       toast.success("Connection removed");
     } catch (error) {
@@ -45,7 +45,7 @@ function ConnectionButton({ userId }) {
   const handleWithdrawConnection = async () => {
     try {
       setLoading(true);
-      await axios.delete(`${serverUrl}/api/connection/withdraw/${userId}`, { withCredentials: true });
+      await axiosInstance.delete(`${serverUrl}/api/connection/withdraw/${userId}`);
       setStatus("connect");
       toast.success("Request withdrawn");
     } catch (error) {
@@ -57,7 +57,7 @@ function ConnectionButton({ userId }) {
 
   const handleGetStatus = async () => {
     try {
-      let result = await axios.get(`${serverUrl}/api/connection/getStatus/${userId}`, { withCredentials: true });
+      let result = await axiosInstance.get(`${serverUrl}/api/connection/getStatus/${userId}`);
       setStatus(result.data.status || "connect");
     } catch (error) {
       console.log(error);

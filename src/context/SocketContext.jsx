@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 import { useLocation } from 'react-router-dom';
 import { userDataContext } from './userContext';
 import { authDataContext } from './AuthContext';
-import axios from 'axios';
+import axiosInstance from '../lib/axios';
 
 export const socketContext = createContext();
 
@@ -74,7 +74,7 @@ function SocketProvider({ children }) {
     // Check for already-pending incoming requests on login/refresh
     const checkPendingRequests = async () => {
       try {
-        const result = await axios.get(`${serverUrl}/api/connection/requests`, { withCredentials: true });
+        const result = await axiosInstance.get(`${serverUrl}/api/connection/requests`);
         if (result.data.length > 0 && pathnameRef.current !== '/network') {
           setUnreadNetwork(true);
         }
@@ -87,7 +87,7 @@ function SocketProvider({ children }) {
     // Check for any unread notifications on first load efficiently
     const checkUnreadNotifications = async () => {
       try {
-        const result = await axios.get(`${serverUrl}/api/notification/unread`, { withCredentials: true });
+        const result = await axiosInstance.get(`${serverUrl}/api/notification/unread`);
         if (result.data.unread && pathnameRef.current !== '/notification') {
           setUnreadNotifications(true);
         }

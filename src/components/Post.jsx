@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import moment from "moment";
 import { MessageCircle, ThumbsUp, Send, Trash2, MessageCircleOff } from "lucide-react";
-import axios from 'axios';
-import { authDataContext } from '../context/AuthContext';
+import axiosInstance from '../lib/axios';
 import { userDataContext } from '../context/userContext';
 import { socket } from '../context/SocketContext';
 import ConnectionButton from './ConnectionButton';
@@ -14,7 +13,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 function Post({ id, author, like, comment, description, image, createdAt, commentsDisabled }) {
   let [more, setMore] = useState(false);
-  let { serverUrl } = useContext(authDataContext);
   let { userData, getPost, handleGetProfile } = useContext(userDataContext);
   let [likes, setLikes] = useState(like);
   let [commentContent, setCommentContent] = useState("");
@@ -25,7 +23,7 @@ function Post({ id, author, like, comment, description, image, createdAt, commen
 
   const handleLike = async () => {
     try {
-      let result = await axios.get(serverUrl + `/api/post/like/${id}`, { withCredentials: true });
+      let result = await axiosInstance.get(`/api/post/like/${id}`);
       setLikes(result.data.like);
     } catch (error) {
       console.log(error);
@@ -36,9 +34,9 @@ function Post({ id, author, like, comment, description, image, createdAt, commen
     e.preventDefault();
     if (!commentContent.trim()) return;
     try {
-      let result = await axios.post(serverUrl + `/api/post/comment/${id}`, {
+      let result = await axiosInstance.post(`/api/post/comment/${id}`, {
         content: commentContent
-      }, { withCredentials: true });
+      });
       setComments(result.data.comment);
       setCommentContent("");
     } catch (error) {
@@ -48,7 +46,7 @@ function Post({ id, author, like, comment, description, image, createdAt, commen
 
   const handleDeleteComment = async (commentId) => {
     try {
-      let result = await axios.delete(serverUrl + `/api/post/comment/${id}/${commentId}`, { withCredentials: true });
+      let result = await axiosInstance.delete(`/api/post/comment/${id}/${commentId}`);
       setComments(result.data.comment);
     } catch (error) {
       console.log(error);
@@ -57,7 +55,7 @@ function Post({ id, author, like, comment, description, image, createdAt, commen
 
   const handleDeletePost = async () => {
     try {
-      await axios.delete(serverUrl + `/api/post/delete/${id}`, { withCredentials: true });
+      await axiosInstance.delete(`/api/post/delete/${id}`);
       setShowDeleteConfirm(false);
       getPost(); // Refresh the feed
     } catch (error) {
@@ -67,7 +65,7 @@ function Post({ id, author, like, comment, description, image, createdAt, commen
 
   const handleToggleComments = async () => {
     try {
-      let result = await axios.put(serverUrl + `/api/post/toggle-comments/${id}`, {}, { withCredentials: true });
+      let result = await axiosInstance.put(`/api/post/toggle-comments/${id}`, {});
       setIsCommentsDisabled(result.data.commentsDisabled);
     } catch (error) {
       console.log(error);

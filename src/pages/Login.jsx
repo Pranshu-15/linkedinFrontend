@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import logo from "../assets/logo2.png";
 import { useNavigate, Link } from "react-router-dom";
 import { authDataContext } from '../context/AuthContext';
-import axios from "axios";
+import axiosInstance from '../lib/axios';
 import { userDataContext } from '../context/userContext';
 import { motion } from 'framer-motion';
 import { Card } from '../components/ui/Card';
@@ -28,10 +28,11 @@ function Login() {
     }
     setLoading(true);
     try {
-      let result = await axios.post(serverUrl + "/api/auth/login", {
+      let result = await axiosInstance.post("/api/auth/login", {
         email,
         password
-      }, { withCredentials: true });
+      });
+      if (result.data.token) localStorage.setItem("token", result.data.token);
       setUserData(result.data);
       toast.success("Welcome back!");
       navigate("/");

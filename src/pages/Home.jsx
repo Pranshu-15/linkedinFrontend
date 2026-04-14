@@ -4,7 +4,7 @@ import dp from "../assets/dp.webp";
 import { Camera, Plus, Image as ImageIcon, Send, X, Edit3 } from "lucide-react";
 import { userDataContext } from '../context/userContext';
 import EditProfile from '../components/EditProfile';
-import axios from 'axios';
+import axiosInstance from '../lib/axios';
 import { authDataContext } from '../context/AuthContext';
 import Post from '../components/Post';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -46,7 +46,7 @@ function Home() {
       if (backendImage) {
         formdata.append("image", backendImage);
       }
-      let result = await axios.post(serverUrl + "/api/post/create", formdata, { withCredentials: true });
+      let result = await axiosInstance.post("/api/post/create", formdata);
       toast.success("Post created successfully!");
       setPosting(false);
       setUploadPost(false);
@@ -63,7 +63,7 @@ function Home() {
 
   const handleSuggestedUsers = async () => {
     try {
-      let result = await axios.get(serverUrl + "/api/user/suggestedusers", { withCredentials: true });
+      let result = await axiosInstance.get("/api/user/suggestedusers");
       setSuggestedUser(result.data);
     } catch (error) {
       console.log(error);

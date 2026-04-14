@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Nav from '../components/Nav';
-import axios from 'axios';
+import axiosInstance from '../lib/axios';
 import { authDataContext } from '../context/AuthContext';
 import dp from "../assets/dp.webp";
 import { CheckCircle2, XCircle, Users, UserMinus, Clock } from "lucide-react";
@@ -18,7 +18,7 @@ function Network() {
 
   const handleGetRequests = async () => {
     try {
-        let result = await axios.get(`${serverUrl}/api/connection/requests`, { withCredentials: true });
+        let result = await axiosInstance.get(`${serverUrl}/api/connection/requests`);
         setConnections(result.data);
     } catch (error) {
        console.log(error);
@@ -27,7 +27,7 @@ function Network() {
 
   const handleAcceptConnection = async (requestId) => {
     try {
-      await axios.put(`${serverUrl}/api/connection/accept/${requestId}`, {}, { withCredentials: true });
+      await axiosInstance.put(`${serverUrl}/api/connection/accept/${requestId}`, {});
       setConnections(connections.filter((con) => con._id !== requestId));
       handleGetMyConnections(); // INSTANTLY update My Connections
     } catch (error) {
@@ -37,7 +37,7 @@ function Network() {
 
   const handleRejectConnection = async (requestId) => {
     try {
-      await axios.put(`${serverUrl}/api/connection/reject/${requestId}`, {}, { withCredentials: true });
+      await axiosInstance.put(`${serverUrl}/api/connection/reject/${requestId}`, {});
       setConnections(connections.filter((con) => con._id !== requestId));
     } catch (error) {
       console.log(error);
@@ -46,7 +46,7 @@ function Network() {
 
   const handleGetMyConnections = async () => {
     try {
-      let result = await axios.get(`${serverUrl}/api/connection/`, { withCredentials: true });
+      let result = await axiosInstance.get(`${serverUrl}/api/connection/`);
       setMyConnections(result.data);
     } catch (error) {
       console.log(error);
@@ -55,7 +55,7 @@ function Network() {
 
   const handleGetSentRequests = async () => {
     try {
-      let result = await axios.get(`${serverUrl}/api/connection/sent-requests`, { withCredentials: true });
+      let result = await axiosInstance.get(`${serverUrl}/api/connection/sent-requests`);
       setSentRequests(result.data);
     } catch (error) {
       console.log(error);
@@ -64,7 +64,7 @@ function Network() {
 
   const handleRemoveConnection = async (userId) => {
     try {
-      await axios.delete(`${serverUrl}/api/connection/remove/${userId}`, { withCredentials: true });
+      await axiosInstance.delete(`${serverUrl}/api/connection/remove/${userId}`);
       setMyConnections(myConnections.filter(con => con._id !== userId));
     } catch (error) {
        console.log(error);
@@ -73,7 +73,7 @@ function Network() {
 
   const handleWithdrawRequest = async (userId) => {
     try {
-      await axios.delete(`${serverUrl}/api/connection/withdraw/${userId}`, { withCredentials: true });
+      await axiosInstance.delete(`${serverUrl}/api/connection/withdraw/${userId}`);
       setSentRequests(sentRequests.filter(req => req.receiver._id !== userId));
     } catch (error) {
       console.log(error);

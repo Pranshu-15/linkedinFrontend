@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Nav from '../components/Nav';
 import { authDataContext } from '../context/AuthContext';
-import axios from 'axios';
+import axiosInstance from '../lib/axios';
 import { X, Trash2, Bell } from "lucide-react";
 import dp from "../assets/dp.webp";
 import { userDataContext } from '../context/userContext';
@@ -19,7 +19,7 @@ function Notification() {
 
   const handleGetNotification = async () => {
       try {
-          let result = await axios.get(serverUrl + "/api/notification/get", { withCredentials: true });
+          let result = await axiosInstance.get("/api/notification/get");
           setNotificationData(result.data);
       } catch (error) {
           console.log(error);
@@ -28,7 +28,7 @@ function Notification() {
 
   const handleDeleteNotification = async (id) => {
       try {
-          await axios.delete(serverUrl + `/api/notification/deleteone/${id}`, { withCredentials: true });
+          await axiosInstance.delete(`/api/notification/deleteone/${id}`);
           setNotificationData(prev => prev.filter(n => n._id !== id));
       } catch (error) {
           console.log(error);
@@ -37,7 +37,7 @@ function Notification() {
 
   const handleClearAllNotification = async () => {
       try {
-          await axios.delete(serverUrl + "/api/notification", { withCredentials: true });
+          await axiosInstance.delete("/api/notification");
           setNotificationData([]);
       } catch (error) {
           console.log(error);
@@ -65,7 +65,7 @@ function Notification() {
       // Mark all as read when user visits the notification page
       const markAsRead = async () => {
           try {
-              await axios.put(serverUrl + "/api/notification/mark-read", {}, { withCredentials: true });
+              await axiosInstance.put("/api/notification/mark-read", {});
               setUnreadNotifications(false);
           } catch (error) {
               console.log("Failed to mark notifications as read", error);
