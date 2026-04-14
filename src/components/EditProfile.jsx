@@ -10,6 +10,7 @@ import { Input } from './ui/Input';
 import { Badge } from './ui/Badge';
 import { Avatar } from './ui/Avatar';
 import { toast } from 'react-toastify';
+import ImageCropper from './ImageCropper';
 
 function EditProfile() {
   let { edit, setEdit, userData, setUserData } = useContext(userDataContext);
@@ -32,6 +33,11 @@ function EditProfile() {
   let [frontendCoverImage, setFrontendCoverImage] = useState(userData.coverImage || null);
   let [backendCoverImage, setBackendCoverImage] = useState(null);
   let [saving, setSaving] = useState(false);
+
+  // Cropper state
+  let [cropSrc, setCropSrc] = useState(null);       // raw objectURL to crop
+  let [cropAspect, setCropAspect] = useState(16/3); // 16:3 cover | 1 avatar
+  let [cropTarget, setCropTarget] = useState(null); // 'cover' | 'profile'
   
   const profileImage = useRef();
   const coverImage = useRef();
@@ -81,17 +87,34 @@ function EditProfile() {
   function handleProfileImage(e) {
     let file = e.target.files[0];
     if (file) {
-       setBackendProfileImage(file);
-       setFrontendProfileImage(URL.createObjectURL(file));
+      setCropSrc(URL.createObjectURL(file));
+      setCropAspect(1);
+      setCropTarget('profile');
     }
+    // reset so same file can be re-selected
+    e.target.value = '';
   }
 
   function handleCoverImage(e) {
     let file = e.target.files[0];
     if (file) {
-       setBackendCoverImage(file);
-       setFrontendCoverImage(URL.createObjectURL(file));
+      setCropSrc(URL.createObjectURL(file));
+      setCropAspect(16 / 3);
+      setCropTarget('cover');
     }
+    e.target.value = '';
+  }
+
+  function handleCropDone(file, previewUrl) {
+    if (cropTarget === 'cover') {
+      setBackendCoverImage(file);
+      setFrontendCoverImage(previewUrl);
+    } else {
+      setBackendProfileImage(file);
+      setFrontendProfileImage(previewUrl);
+    }
+    setCropSrc(null);
+    setCropTarget(null);
   }
 
   const handleSaveProfile = async () => {
@@ -127,6 +150,15 @@ function EditProfile() {
   };
 
   return (
+    <>
+    {cropSrc && (
+      <ImageCropper
+        imageSrc={cropSrc}
+        aspect={cropAspect}
+        onDone={handleCropDone}
+        onCancel={() => { setCropSrc(null); setCropTarget(null); }}
+      />
+    )}
     <Modal isOpen={edit} onClose={() => setEdit(false)} title="Edit Profile" className="max-w-2xl">
       <div className="flex flex-col gap-6 p-1">
         <input type="file" accept='image/*' hidden ref={profileImage} onChange={handleProfileImage} />
@@ -265,6 +297,7 @@ function EditProfile() {
         </div>
       </div>
     </Modal>
+    </>
   );
 }
 
